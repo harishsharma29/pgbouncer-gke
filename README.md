@@ -19,10 +19,16 @@
     
     docker images
 
-  To run pgbouncer in docker container need to pass two env variables. 
+  To run pgbouncer in docker container need to pass database password in DB_PASS variables. 
 
-    docker run -it -e DB_HOST=localhot -e DB_PASS=admin imageshash
+    docker run -it -e DB_PASS=admin imageshash
 
+  > Other variables that can be passed as eviourment variables (If not passed then it will set default values)
+
+  - DB_USER
+  - DB_HOST
+  - DB_PORT
+  - MAX_CONNECTIONS
 ## Deployment in gcloud containers
 
   - Run gcloud-deploy.sh script, This will build and upload the container to google container registry.
