@@ -23,6 +23,7 @@ RUN useradd -M postgres
 RUN chown -R postgres:postgres /var/log/postgresql
 RUN chown -R postgres:postgres /var/run/postgresql
 COPY . .
+RUN chmod +x entrypoint.sh
 RUN ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 EXPOSE 6432
-CMD bash entrypoint.sh
+CMD ["./entrypoint.sh"]
