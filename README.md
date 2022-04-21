@@ -29,6 +29,7 @@
   - DB_HOST
   - DB_PORT
   - MAX_CONNECTIONS
+  - LISTEN_PORT
 ## Deployment in gcloud containers
 
   - Run gcloud-deploy.sh script, This will build and upload the container to google container registry.

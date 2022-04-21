@@ -27,6 +27,12 @@ if [ -z ${MAX_CONNECTIONS+x} ]
         MAX_CONNECTIONS=500
 fi
 
+if [ -z ${LISTEN_PORT+x} ]
+    then
+        echo "Settings max client connections as 500"
+        LISTEN_PORT=6432
+fi
+
 if [ -z ${DB_USER+x} ]
     then
         echo "Settings database user as postgres"
@@ -39,6 +45,7 @@ sed -i "s/_db_host/$DB_HOST/g" pgbouncer.ini
 sed -i "s/_db_port/$DB_PORT/g" pgbouncer.ini
 sed -i "s/_db_user/$DB_USER/g" pgbouncer.ini
 sed -i "s/_max_client_conn/$MAX_CONNECTIONS/g" pgbouncer.ini
+sed -i "s/_listen_port/$LISTEN_PORT/g" pgbouncer.ini
 sed -i "s/_password/$DB_PASS/g" userlist.txt
 sed -i "s/_db_user/$DB_USER/g" userlist.txt
 
