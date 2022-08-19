@@ -13,6 +13,12 @@
 
     docker run build -t tagname .
 
+## To use existing Docker build
+  
+  To use existing docker build use following command
+  
+    docker pull harishcs/pgbouncer:latest
+
 ## Consume docker images on local machine
 
   check images hash using below command
