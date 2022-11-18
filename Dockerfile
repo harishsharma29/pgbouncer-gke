@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM redis
 ENV TZ=Asia/Kolkata \
     DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y make \
