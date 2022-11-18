@@ -49,4 +49,17 @@ sed -i "s/_listen_port/$LISTEN_PORT/g" pgbouncer.ini
 sed -i "s/_password/$DB_PASS/g" userlist.txt
 sed -i "s/_db_user/$DB_USER/g" userlist.txt
 
+# setup new pgbouncer server on another port for replica in move that in background
+if [ ${REPLICA_DB_HOST+x} ]
+    then
+        sed -i "s/$DB_HOST/$REPLICA_DB_HOST/g" pgbouncer.ini
+        REPLICA_LISTEN_PORT=$(( $LISTEN_PORT + 1 ))
+        sed -i "s/$LISTEN_PORT/$REPLICA_LISTEN_PORT/g" pgbouncer.ini
+        echo "STARTING REPLICA SERVER FOR DATABASE HOST $DB_HOST..."
+        pgbouncer -R pgbouncer.ini -u postgres &
+        echo "REPLICA SERVER STARTED ON PORT $REPLICA_LISTEN_PORT..."
+fi
+
+sed -i "s/$REPLICA_DB_HOST/$DB_HOST/g" pgbouncer.ini
+sed -i "s/$REPLICA_LISTEN_PORT/$LISTEN_PORT/g" pgbouncer.ini
 pgbouncer -R pgbouncer.ini -u postgres

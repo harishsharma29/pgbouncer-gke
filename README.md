@@ -36,6 +36,10 @@
   - DB_PORT
   - MAX_CONNECTIONS
   - LISTEN_PORT
+  - REPLICA_DB_HOST
+
+  > If you want to setup pg boucner for replica database then add env variable REPLICA_DB_HOST along with other, when this variable presents in env then it will create one more instance with given replica db host variable on the very next port given in LISTEN_PORT variable.
+
 ## Deployment in gcloud containers
 
   - Run gcloud-deploy.sh script, This will build and upload the container to google container registry.
