@@ -1,4 +1,4 @@
-FROM redis
+FROM ubuntu
 ENV TZ=Asia/Kolkata \
     DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y make \
@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y make \
     openssl \
     libssl-dev \
     python3 \
-    git
+    git \
+    redis-server
 WORKDIR /usr/src
 RUN git clone https://github.com/pgbouncer/pgbouncer.git
 WORKDIR /usr/src/pgbouncer

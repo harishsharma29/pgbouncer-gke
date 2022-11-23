@@ -7,7 +7,9 @@ if [ -z ${REDIS_SERVER+x} ]
     then
         echo "Running without redis server"
     else
-        redis-server &
+        sed -i "s/bind 127.0.0.1 ::1/bind 0.0.0.0 ::1/g" /etc/redis/redis.conf
+        sed -i "s/protected-mode yes/protected-mode no/g" /etc/redis/redis.conf
+        redis-server /etc/redis/redis.conf
 fi
 
 # check env variables
@@ -62,13 +64,51 @@ if [ -z ${REPLICA_DB_HOST+x} ]
     then
         pgbouncer -R pgbouncer.ini -u postgres
     else
-        sed -i "s/$DB_HOST/$REPLICA_DB_HOST/g" pgbouncer.ini
-        REPLICA_LISTEN_PORT=$(( $LISTEN_PORT + 1 ))
-        sed -i "s/$LISTEN_PORT/$REPLICA_LISTEN_PORT/g" pgbouncer.ini
-        echo "STARTING REPLICA SERVER FOR DATABASE HOST $DB_HOST..."
+        echo "USERS LIST $(cat userlist.txt)"
+        echo "STARTING SERVER $(cat pgbouncer.ini | grep *=host)"
+        echo "STARTING SERVER ON PORT $(cat pgbouncer.ini | grep listen_port)"
         pgbouncer -R pgbouncer.ini -u postgres &
-        echo "REPLICA SERVER STARTED ON PORT $REPLICA_LISTEN_PORT..."
-        sed -i "s/$REPLICA_DB_HOST/$DB_HOST/g" pgbouncer.ini
-        sed -i "s/$REPLICA_LISTEN_PORT/$LISTEN_PORT/g" pgbouncer.ini
+        git checkout .
+
+        sed -i "s/_db_host/$REPLICA_DB_HOST/g" pgbouncer.ini
+        sed -i "s/_max_client_conn/$MAX_CONNECTIONS/g" pgbouncer.ini
+
+        if [ -z ${REPLICA_DB_PORT+x} ]
+            then
+            echo "Using same port: $DB_PORT for replica server..."
+            sed -i "s/_db_port/$DB_PORT/g" pgbouncer.ini
+            else
+            echo "setting up port: $REPLICA_DB_PORT"
+            sed -i "s/_db_port/$REPLICA_DB_PORT/g" pgbouncer.ini
+        fi
+
+        if [ -z ${REPLICA_DB_USER+x} ]
+            then
+            echo "Using same user: $DB_USER for replica server..."
+            sed -i "s/_db_user/$DB_USER/g" pgbouncer.ini
+            sed -i "s/_db_user/$DB_USER/g" userlist.txt
+            else
+            echo "setting up user: $REPLICA_DB_USER"
+            sed -i "s/_db_user/$REPLICA_DB_USER/g" pgbouncer.ini
+            sed -i "s/_db_user/$REPLICA_DB_USER/g" userlist.txt
+        fi
+
+        if [ -z ${REPLICA_DB_PASS+x} ]
+            then
+            echo "Using same password: $DB_PASS for replica server..."
+            sed -i "s/_password/$DB_PASS/g" userlist.txt
+            else
+            echo "setting up password: $REPLICA_DB_PASS"
+            sed -i "s/_password/$REPLICA_DB_PASS/g" userlist.txt
+        fi
+
+        REPLICA_LISTEN_PORT=$(( $LISTEN_PORT + 1 ))
+        sed -i "s/_listen_port/$REPLICA_LISTEN_PORT/g" pgbouncer.ini
+        sed -i "s/pgbouncer.log/pgbouncer_$REPLICA_LISTEN_PORT.log/g" pgbouncer.ini
+        sed -i "s/pgbouncer.pid/pgbouncer_$REPLICA_LISTEN_PORT.pid/g" pgbouncer.ini
+
+        echo "USERS LIST $(cat userlist.txt)"
+        echo "STARTING REPLICA SERVER $(cat pgbouncer.ini | grep *=host)"
+        echo "STARTING REPLICA SERVER ON PORT $(cat pgbouncer.ini | grep listen_port)"
         pgbouncer -R pgbouncer.ini -u postgres
 fi
