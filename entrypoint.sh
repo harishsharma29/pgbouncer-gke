@@ -9,6 +9,11 @@ if [ -z ${REDIS_SERVER+x} ]
     else
         sed -i "s/bind 127.0.0.1 ::1/bind 0.0.0.0 ::1/g" /etc/redis/redis.conf
         sed -i "s/protected-mode yes/protected-mode no/g" /etc/redis/redis.conf
+        if [ -z ${REDIS_PORT+x} ]
+            then 
+            REDIS_PORT=6379
+        fi
+        sed -i "s/port 6379/port $REDIS_PORT/g" /etc/redis/redis.conf
         redis-server /etc/redis/redis.conf
 fi
 
