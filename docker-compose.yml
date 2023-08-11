@@ -1,0 +1,40 @@
+version: '1.0'
+
+networks:
+  pg-bouncer-network:
+    driver: bridge
+
+services:
+
+  pg-bouncer-and-redis:
+    container_name: pgbouncer_redis
+    image: harishcs/pgbouncer-redis:latest # Replace with your actual image name and tag
+    environment:
+      - REDIS_SERVER=1
+      - DB_HOST=localhost # Replace with your host IP
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - MAX_CONNECTIONS=500
+      - LISTEN_PORT=6432
+    ports:
+      - "6432:6432" # HostPort:ContainerPort for pg-bouncer
+      - "6379:6379" # HostPort:ContainerPort for Redis
+    networks:
+      - pg-bouncer-network
+    restart: always
+
+  postgres-db:
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      Listen_Addresses: '*'
+    volumes:
+      - path-to-directory:/var/lib/postgresql/data
+    networks:
+      - pg-bouncer-network
+    ports:
+      - "5432:5432"

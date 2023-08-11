@@ -1,80 +1,70 @@
-# PgBoucner
+# Running pgbouncer and Redis Instances in Docker Containers
 
-  Lightweight connection pooler for PostgreSQL
+This guide outlines the steps to set up pgbouncer (PostgreSQL connection pooler) and Redis instances inside Docker containers using a provided Bash script.
 
-## Prerequisite
-  
-  - docker (can be downloaded from "https://docs.docker.com/engine/install")
-  - gcloud cli (can be installed by following "https://cloud.google.com/sdk/docs/install")
+## Prerequisites
 
-## Create Dcoker build
+- Docker: Make sure you have Docker installed on your system. You can download and install Docker from [here](https://www.docker.com/get-started).
 
-  To Create docker build use following command
+## Instructions
 
-    docker run build -t tagname .
+1. Clone the Repository:
 
-## To use existing Docker build
-  
-  To use existing docker build use following command
-  
-    docker pull harishcs/pgbouncer:latest
+    ```bash
+    git clone <repository_url>
+    cd <repository_directory>
+    ```
 
-## Consume docker images on local machine
+2. Modify Environment Variables (Optional):
 
-  check images hash using below command
-    
-    docker images
+    Open the `run-pgbouncer.sh` script and modify the environment variables to suit your requirements. The script allows you to customize various settings such as Redis configuration, database connection details, and more.
 
-  To run pgbouncer in docker container need to pass database password in DB_PASS variables. 
+3. Build Docker Images:
 
-    docker run -it -e DB_PASS=admin imageshash
+    Run the following commands to build Docker images for pgbouncer and Redis:
 
-  > Other variables that can be passed as eviourment variables (If not passed then it will set default values)
+    ```bash
+    docker build -t pgbouncer-redis .
+    ```
 
-  - DB_USER
-  - DB_HOST
-  - DB_PORT
-  - MAX_CONNECTIONS
-  - LISTEN_PORT
-  - REPLICA_DB_HOST
+4. Run Docker Containers:
 
-  > If you want to setup pg boucner for replica database then add env variable REPLICA_DB_HOST along with other, when this variable presents in env then it will create one more instance with given replica db host variable on the very next port given in LISTEN_PORT variable.
+    Use the following command to start the Docker containers:
 
-## Deployment in gcloud containers
+    ```bash
+    docker run -d --name pgbouncer-redis-container -e DB_PASS=admin pgbouncer-redis
+    ```
 
-  - Run gcloud-deploy.sh script, This will build and upload the container to google container registry.
-    
-    bash gcloud-deploy.sh
+    This will start both the pgbouncer and Redis containers.
 
-  - Once done you have create kubernetes cluster in Google Kubernetes Engine.
+5. Verify Containers:
 
-  - Then you have to dpeloy new workload, while deploying it will ask for for image path you can click on select and choose lastest images from `gcr.io/project-id/pgbouncer`.
+    To verify that the containers are running, you can use the following commands:
 
-  - Then you have to add two `Environment variables`, 
+    ```bash
+    docker ps
+    ```
 
-    DB_HOST=127.0.0.1 (host of you psql instance)
-    DB_PASS=admin (password for you psql database)
+    You should see both the pgbouncer and Redis containers listed.
 
-  - After deployments go in workload section in GKE and open newely created conatainer, choose expose service from actions.
+6. Access pgbouncer and Redis:
 
-  - PgBoucner is running on port `6432` this has to be exposed, so fill `6432` in port and choose ip type as `Load balancer`.
+    You can access pgbouncer and Redis using their respective ports. By default, pgbouncer is configured to listen on port 6432, and Redis is configured to listen on port 6379.
 
-  This will create on load balancer external IP, we need to chage this IP as interanl IP. For that:
+    - pgbouncer: `localhost:6432`
+    - Redis: `localhost:6379`
 
-  - Go in to `Services & Ingress` Section of GKE, select and edit load balancer service.
-  - In edit YMAL add `​cloud.google.com/load-balancer-type: Internal` in `metodata > annotations` like this:
-      
+7. Clean Up:
 
-          apiVersion: v1
-          kind: Service
-          metadata:
-            annotations:
-              cloud.google.com/load-balancer-type: Internal
-              cloud.google.com/neg: '{"ingress":true}'
-          creationTimestamp: "2022-03-21T16:12:58Z"
+    To stop and remove the containers, you can use the following commands:
 
-  You have to create as many deployments as you have psql instances including replica instances.
+    ```bash
+    docker stop pgbouncer-redis-container
+    docker rm pgbouncer-redis-container
+    ```
 
-  For example if you have 1 PSQL instance and with 2 replica instance then you have to deploy 3 (1 psql + 2 replica) workloads. For this you can use same image.
+## Important Notes
 
-  > After deployments you have to changes db host in gcloud run services with the exposed service IP
+- Make sure to review and adjust the environment variables in the `entrypoint.sh` script according to your setup and security requirements.
+
+- This guide provides a basic setup for running pgbouncer and Redis in Docker containers. Depending on your use case and production requirements, additional configurations and security measures might be necessary
