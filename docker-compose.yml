@@ -11,12 +11,14 @@ services:
     image: harishcs/pgbouncer-redis:latest # Replace with your actual image name and tag
     environment:
       - REDIS_SERVER=1
-      - DB_HOST=localhost # Replace with your host IP
+      - DB_HOST=192.168.1.15 # Replace with your host IP
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASS=postgres
       - MAX_CONNECTIONS=500
       - LISTEN_PORT=6432
+    volumes:
+      - path-to-mount:/var/lib/redis
     ports:
       - "6432:6432" # HostPort:ContainerPort for pg-bouncer
       - "6379:6379" # HostPort:ContainerPort for Redis
