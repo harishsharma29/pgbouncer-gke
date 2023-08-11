@@ -11,8 +11,8 @@ This guide outlines the steps to set up pgbouncer (PostgreSQL connection pooler)
 1. Clone the Repository:
 
     ```bash
-    git clone <repository_url>
-    cd <repository_directory>
+    git clone git@github.com:harishsharma29/pgbouncer-gke.git
+    cd pgbouncer-gke
     ```
 
 2. Modify Environment Variables (Optional):
