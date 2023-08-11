@@ -26,15 +26,30 @@ services:
 
   postgres-db:
     container_name: postgres
-    image: postgres
+    image: postgres:latest
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       Listen_Addresses: '*'
     volumes:
-      - path-to-directory:/var/lib/postgresql/data
+      - path-to-mount:/var/lib/postgresql/data
     networks:
       - pg-bouncer-network
     ports:
       - "5432:5432"
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 5555
+    volumes:
+      - path-to-mount:/var/lib/pgadmin
+    networks:
+      - pg-bouncer-network
+    ports:
+      - "5555:5555"
