@@ -17,7 +17,7 @@ This guide outlines the steps to set up pgbouncer (PostgreSQL connection pooler)
 
 2. Modify Environment Variables (Optional):
 
-    Open the `run-pgbouncer.sh` script and modify the environment variables to suit your requirements. The script allows you to customize various settings such as Redis configuration, database connection details, and more.
+    Open the `entrypoint.sh` script and modify the environment variables to suit your requirements. The script allows you to customize various settings such as Redis configuration, database connection details, and more.
 
 3. Build Docker Images:
 
