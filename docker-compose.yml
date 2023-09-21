@@ -11,7 +11,7 @@ services:
     image: harishcs/pgbouncer-redis:latest # Replace with your actual image name and tag
     environment:
       - REDIS_SERVER=1
-      - DB_HOST=192.168.1.15 # Replace with your host IP
+      - DB_HOST=postgres-db
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASS=postgres
